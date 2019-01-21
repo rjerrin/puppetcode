@@ -1,0 +1,35 @@
+eservices:
+  - whoopsie
+  - snapd
+  - avahi-daemon
+  - kerneloops
+  - apport
+  - bluetooth
+  - snap.canonical-livepatch.canonical-livepatchd
+  - vboxweb-service
+  - apport-autoreport
+  - pppd-dns
+  - rsyslog
+  - systemd-resolved
+  - systemd-rfkill
+  - postfix
+  - snappy
+  - microk8s
+  - minikube
+  - kubectl
+  
+  
+nameservers:
+  - '185.121.177.177'
+  - '192.168.100.1'
+
+nfsshare:
+  'access': '192.168.100.15(rw,insecure,async,no_root_squash) localhost(rw) 192.168.100.10(rw,insecure,async,no_root_squash)'
+  'share':  '/'
+
+
+sysctl:
+  "net.ipv6.conf.all.disable_ipv6" : "1"
+  "net.ipv6.conf.lo.disable_ipv6":   "1"
+  "net.ipv6.conf.lo.disable_ipv6":   "1"
+  "vm.swappiness": "0"              

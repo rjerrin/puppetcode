@@ -1,0 +1,13 @@
+node 'Jslm'  
+{
+
+include roles::ubase
+include roles::nfsshare
+
+}
+
+
+
+
+
+

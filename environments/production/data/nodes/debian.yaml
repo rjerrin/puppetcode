@@ -1,0 +1,22 @@
+networking:
+  IP: "192.168.100.12"
+  netmask: "255.255.255.0"
+  interface: "enp0s3"
+  gateway: "192.168.100.1"
+
+
+eservices:
+  - 'kubelet'
+  - 'kube-scheduler'
+  - 'kube-controller-manager'
+  - 'kube-proxy'
+
+rpackages:
+  - 'kubelet'
+  - 'kube-scheduler'
+  - 'kube-controller-manager'
+  - 'kube-proxy'
+
+commands:
+  - "/sbin/route add default gw 192.168.100.1"
+  - "/home/jery/minikube  stop"
