@@ -17,6 +17,27 @@ eservices:
   - microk8s
   - minikube
   - kubectl
+  - 'snap-canonical\x2dlivepatch-50.mount'
+  - 'snap-canonical\x2dlivepatch-54.mount'
+  - 'snap-core-5897.mount'
+  - 'snap-core-6034.mount'
+  - 'snap-core-6130.mount'
+  - 'snap-gnome\x2d3\x2d26\x2d1604-70.mount'
+  - 'snap-gnome\x2d3\x2d26\x2d1604-74.mount'
+  - 'snap-gnome\x2dcalculator-180.mount'
+  - 'snap-gnome\x2dcalculator-238.mount'
+  - 'snap-gnome\x2dcalculator-260.mount'
+  - 'snap-gnome\x2dcharacters-103.mount'
+  - 'snap-gnome\x2dcharacters-139.mount'
+  - 'snap-gnome\x2dlogs-37.mount'
+  - 'snap-gnome\x2dlogs-45.mount'
+  - 'snap-gnome\x2dsystem\x2dmonitor-51.mount'
+  - 'snap-gnome\x2dsystem\x2dmonitor-57.mount'
+  - 'snap-gtk\x2dcommon\x2dthemes-701.mount'
+  - 'snap-gtk\x2dcommon\x2dthemes-808.mount'
+  - 'snap-gtk\x2dcommon\x2dthemes-818.mount'
+  - 'snap-microk8s-354.mount'
+  
   
   
 nameservers:
@@ -33,3 +54,9 @@ sysctl:
   "net.ipv6.conf.lo.disable_ipv6":   "1"
   "net.ipv6.conf.lo.disable_ipv6":   "1"
   "vm.swappiness": "0"              
+
+
+ipackages:
+  - "ntpd"
+  
+  

@@ -4,13 +4,11 @@ class profile::services::ubase (
   Array $ns  = lookup('nameservers', { value_type => Array }),
   Hash  $sysctl = lookup('sysctl',  { value_type => Hash } ),
   Array $commands = lookup('commands', {value_type => Array}),
-  )	     {
-  
-  include '::network'
-  case $facts['os']['name'] {
-    'Debian', 'Ubuntu':  { include 'apt' include 'unattended_upgrades' }
-  }
+  Array $packages = lookup('packages', {value_type => Array, default_value => [] }),
 
+
+)
+{
 
   if $facts['os']['family'] == 'Debian' {
     $eservices.each | String $service| {
@@ -19,8 +17,17 @@ class profile::services::ubase (
         enable => false,
         
       }
-    }
-  }
+
+
+
+      }
+    
+        
+    include  'profile::services::upgrade'
+    include  'profile::services::time'	
+
+}
+
   network_config { $net['interface'] :
     ensure    => present,
     family    => 'inet',
@@ -63,6 +70,14 @@ class profile::services::ubase (
     }
 
   }
+
+  $packages.each | String $package | {
+    package { $package:
+      name => $package,
+      ensure => absent,
+    }
+
+    }
   
 
   }

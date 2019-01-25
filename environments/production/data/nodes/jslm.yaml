@@ -10,6 +10,15 @@ services:
 commands:
   - "/bin/echo  dummy"
 
+packages:
+  - "docker-ce"
+  - "docker.io"
+  - "snapd"
+  - "docker"
+  - "snap-aligner"
+  - "snap-confine"
+  - "unbound"
+
 
   
   
