@@ -1,0 +1,24 @@
+networking:
+  IP: "192.168.100.6"
+  netmask: "255.255.255.0"
+  interface: "eno1"
+  gateway: "192.168.100.1"
+
+services:
+  - "none"
+
+commands:
+  - "/bin/echo  dummy"
+
+packages:
+  - "docker-ce"
+  - "docker.io"
+  - "snapd"
+  - "docker"
+  - "snap-aligner"
+  - "snap-confine"
+  - "unbound"
+
+
+  
+  

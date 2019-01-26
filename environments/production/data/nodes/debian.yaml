@@ -4,7 +4,6 @@ networking:
   interface: "enp0s3"
   gateway: "192.168.100.1"
 
-
 eservices:
   - 'kubelet'
   - 'kube-scheduler'
@@ -20,3 +19,12 @@ rpackages:
 commands:
   - "/sbin/route add default gw 192.168.100.1"
   - "/home/jery/minikube  stop"
+
+ipackages:
+  - "nfs-common"
+
+files:
+  "/jslm": "directory"
+
+fcontent:
+  "/etc/fstab":  "jslm:/       /jslm    nfs     rw,async,hard,intr,noexec 0  0"
