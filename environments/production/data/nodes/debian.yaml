@@ -22,9 +22,27 @@ commands:
 
 ipackages:
   - "nfs-common"
+  - "openssh-server"
+  - "build-essential"
+  - "linux-source"
+  - "bc"
+  - "kmod"
+  - "flex"
+  - "cpio"
+  - "libncurses5-dev"
+  - "audacity"
+  - "snapd"
 
 files:
   "/jslm": "directory"
 
 fcontent:
   "/etc/fstab":  "jslm:/       /jslm    nfs     rw,async,hard,intr,noexec 0  0"
+
+aptkeys:
+  'pgp.mit.edu' : 'ED444FF07D8D0BF6'
+
+vms:
+  'tos': 'manzur'
+  'Debian': 'manzur'
+  

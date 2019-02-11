@@ -20,5 +20,8 @@ packages:
   - "unbound"
 
 
-  
+vms:
+  'tos': 'manzur'
+  'Debian': 'manzur'
+    
   

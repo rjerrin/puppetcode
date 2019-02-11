@@ -45,7 +45,7 @@ nameservers:
   - '192.168.100.1'
 
 nfsshare:
-  'access': '192.168.100.12(rw,insecure,async,no_root_squash) localhost(rw) 192.168.100.10(rw,insecure,async,no_root_squash)'
+  'access': '192.168.100.12(rw,insecure,async,no_root_squash) localhost(rw) 192.168.100.10(rw,insecure,async,no_root_squash)  192.168.100.15(rw,insecure,async,no_root_squash)'
   'share':  '/'
 
 

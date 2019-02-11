@@ -1,0 +1,5 @@
+class profile::services::extrepo(
+  Hash $keys = lookup( 'aptkeys', { value_type => Hash, default_value = {} } ),
+)
+{
+  

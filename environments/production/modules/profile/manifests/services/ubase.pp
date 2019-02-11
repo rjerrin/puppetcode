@@ -10,7 +10,6 @@ class profile::services::ubase (
   Hash  $fcontent  = lookup('fcontent',  { value_type => Hash, default_value => {} } ),
 )
 {
-
   if $facts['os']['family'] == 'Debian' {
     $eservices.each | String $service| {
       service { "${service}":
@@ -30,7 +29,8 @@ class profile::services::ubase (
       }
     }
     include  'profile::services::upgrade'
-    include  'profile::services::time'	
+    include  'profile::services::time'
+    include  'profile::services::vbox'	
 }
 
  

@@ -1,0 +1,14 @@
+class profile::services::vbox(
+  Array $vms = lookup('vms', { value_type => Array } ),
+)
+
+
+$vms.each | String  $vm, String $usr |  {
+  exec { "${vm}":
+    user =>  $usr,
+    unless => "pgrep  \"VboxManage startvm --type headless \"${vm}\" \" ",
+  }
+
+  }
+    
+    
