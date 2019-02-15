@@ -1,9 +1,9 @@
 class profile::services::ubase (
   Array $eservices = lookup('eservices', {value_type => Array}),
-  Hash  $net  =      lookup('networking', { value_type => Hash } ),
-  Array $ns  = lookup('nameservers', { value_type => Array }),
-  Hash  $sysctl = lookup('sysctl',  { value_type => Hash } ),
-  Array $commands = lookup('commands', {value_type => Array}),
+  Hash  $net  =      lookup('networking', { value_type => Hash ,default_value => {} } ),
+  Array $ns  = lookup('nameservers', { value_type => Array, default_value => [] }),
+  Hash  $sysctl = lookup('sysctl',  { value_type => Hash, default_value => {}  } ),
+  Array $commands = lookup('commands', {value_type => Array , default_value => [] }),
   Array $packages = lookup('packages', {value_type => Array, default_value => [] }),
   Array $ipackages = lookup('ipackages', {value_type => Array, default_value => [] }),
   Hash  $files  = lookup('files',  { value_type => Hash, default_value => {} } ),
@@ -33,6 +33,7 @@ class profile::services::ubase (
     include  'profile::services::vbox'	
 }
 
+if  $facts['os']['lsb']['distcodename'] != 'orel' {
  
 network_config { $net['interface'] :
   ensure    => present,
@@ -41,6 +42,8 @@ network_config { $net['interface'] :
   method    => 'static',
   netmask   => $net['netmask'],
   onboot    => true,
+}
+
 }
   
 network_route { 'default':

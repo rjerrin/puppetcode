@@ -12,6 +12,11 @@ include roles::ubase
 
 }
 
+node 'astra'
+{
+include roles::ubase
+}
+
 
 
 
