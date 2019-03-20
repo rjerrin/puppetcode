@@ -30,10 +30,9 @@ class profile::services::ubase (
     }
     include  'profile::services::upgrade'
     include  'profile::services::time'
-    include  'profile::services::vbox'	
 }
 
-if  $facts['os']['lsb']['distcodename'] != 'orel' {
+#if  $facts['os']['lsb']['distcodename'] != 'orel' {
  
 network_config { $net['interface'] :
   ensure    => present,
@@ -44,7 +43,7 @@ network_config { $net['interface'] :
   onboot    => true,
 }
 
-}
+#}
   
 network_route { 'default':
   ensure    => present,
