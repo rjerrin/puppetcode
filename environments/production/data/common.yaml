@@ -56,7 +56,6 @@ sysctl:
   "vm.swappiness": "0"              
 
 
-ipackages:
-  - "ntpd"
+#ipackages:
   
   

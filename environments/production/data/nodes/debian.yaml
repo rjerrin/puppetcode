@@ -9,6 +9,7 @@ eservices:
   - 'kube-scheduler'
   - 'kube-controller-manager'
   - 'kube-proxy'
+  - 'lightdm'
 
 rpackages:
   - 'kubelet'
