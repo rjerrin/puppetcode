@@ -32,6 +32,8 @@ ipackages:
   - "cpio"
   - "libncurses5-dev"
   - "audacity"
+
+packeges:
   - "snapd"
 
 files:
@@ -42,6 +44,11 @@ fcontent:
 
 aptkeys:
   'pgp.mit.edu' : 'ED444FF07D8D0BF6'
+
+
+virtualbox:
+        'enabled': 'yes'    
+
 
 vms:
   'tos': 'manzur'

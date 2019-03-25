@@ -41,8 +41,11 @@ eservices:
   
   
 nameservers:
-  - '185.121.177.177'
-  - '192.168.100.1'
+  - '194.190.175.17'
+  - '91.204.252.179'
+held:
+  -  'puppet-agent'
+  -  'puppet-release'
 
 nfsshare:
   'access': '192.168.100.12(rw,insecure,async,no_root_squash) localhost(rw) 192.168.100.10(rw,insecure,async,no_root_squash)  192.168.100.15(rw,insecure,async,no_root_squash)'

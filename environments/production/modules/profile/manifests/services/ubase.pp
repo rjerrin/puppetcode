@@ -6,9 +6,15 @@ class profile::services::ubase (
   Array $commands = lookup('commands', {value_type => Array , default_value => [] }),
   Array $packages = lookup('packages', {value_type => Array, default_value => [] }),
   Array $ipackages = lookup('ipackages', {value_type => Array, default_value => [] }),
+  Array $held = lookup('held', {value_type => Array, default_value => [] }),
   Hash  $files  = lookup('files',  { value_type => Hash, default_value => {} } ),
+  Hash  $virtualbox  = lookup('enabled',  { value_type => Hash, default_value => {} } ),
   Hash  $fcontent  = lookup('fcontent',  { value_type => Hash, default_value => {} } ),
 )
+
+
+
+
 {
   if $facts['os']['family'] == 'Debian' {
     $eservices.each | String $service| {
@@ -19,6 +25,7 @@ class profile::services::ubase (
       }
 
     }
+}
 
     $ipackages.each | String $pkg | {
       package { $pkg:
@@ -27,9 +34,19 @@ class profile::services::ubase (
         
 
       }
-    }
+}
+    $held.each | String $pkg | {
+       package { $pkg:
+        name => $pkg,
+        ensure => held,
+}
+}
     include  'profile::services::upgrade'
     include  'profile::services::time'
+
+
+if $virtualbox['enabled'] == 'yes' {
+   include 'profile::services::vbox'
 }
 
 #if  $facts['os']['lsb']['distcodename'] != 'orel' {
@@ -80,7 +97,7 @@ $sysctl.each | String $sysvar, String $value | {
 $packages.each | String $package | {
   package { $package:
     name => $package,
-    ensure => absent,
+    ensure => purged,
   }
 }
 
