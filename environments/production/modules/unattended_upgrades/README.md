@@ -1,175 +1,129 @@
-# Unattended Upgrades module for Puppet
-
-[![Build Status](https://travis-ci.org/voxpupuli/puppet-unattended_upgrades.png?branch=master)](https://travis-ci.org/voxpupuli/puppet-unattended_upgrades)
-[![Puppet Forge](https://img.shields.io/puppetforge/v/puppet/unattended_upgrades.svg)](https://forge.puppetlabs.com/puppet/unattended_upgrades)
-[![Puppet Forge - downloads](https://img.shields.io/puppetforge/dt/puppet/unattended_upgrades.svg)](https://forge.puppetlabs.com/puppet/unattended_upgrades)
-[![Puppet Forge - endorsement](https://img.shields.io/puppetforge/e/puppet/unattended_upgrades.svg)](https://forge.puppetlabs.com/puppet/unattended_upgrades)
-[![Puppet Forge - scores](https://img.shields.io/puppetforge/f/puppet/unattended_upgrades.svg)](https://forge.puppetlabs.com/puppet/unattended_upgrades)
+# andschwa-unattended_upgrades
 
 #### Table of Contents
 
 1. [Overview](#overview)
-1. [Module Description](#module-description)
-1. [Setup](#setup)
-1. [Usage](#usage)
-1. [Reference](#reference)
-    * [Classes](#classes)
-    * [Parameters](#parameters)
-1. [Limitations - OS compatibility, etc.](#limitations)
-1. [License](#license)
+2. [Module Description](#module-description)
+3. [Setup - The basics of getting started with andschwa-unattended_upgrades](#setup)
+    * [What andschwa-unattended_upgrades affects](#what-andschwa-unattended_upgrades-affects)
+    * [Beginning with andschwa-unattended_upgrades](#beginning-with-andschwa-unattended_upgrades)
+4. [Usage - Configuration options and additional functionality](#usage)
+5. [Limitations - OS compatibility, etc.](#limitations)
+6. [Development - Guide for contributing to the module](#development)
 
 ## Overview
 
-The unattended\_upgrades module allows for the installation and configuration
-of automatic security (and other) updates through apt.
+This module installs the 'unattended-upgrades' package, installs the
+configuration files using templates, and ensures the service is
+running.
 
-This functionality used to be part of the puppetlabs-apt module but was split
-off into its own module.
+Note that this module is a bit superfluous if you're using
+[puppetlabs/apt](https://github.com/puppetlabs/puppetlabs-apt), as it
+can fully configure unattended upgrades. I realized this only after I
+wrote this package, and personally switched to it in the interest of
+simplicity. However, as this does not require the apt module as a
+dependency, it may still be useful to some.
 
 ## Module Description
 
-The unattended\_upgrades module automates the configuration of apt package updates.
+This module is intended for Ubuntu and Debian systems, where the
+'unattended-upgrades' package is available. Alternatives include
+scheduling updates with cron by hand (and in fact,
+'unattended-upgrades' utilizes cron), and using cron-apt (more detail
+[here](https://help.ubuntu.com/community/AutomaticSecurityUpdates)).
 
 ## Setup
 
-### What unattended\_upgrades affects
+### What andschwa-unattended_upgrades affects
 
-* Package/configuration for unattended\_upgrades
+* Packages
+    * `unattended-upgrades`
+* Services
+    * `unattended-upgrades`
+* Files
+    * `/etc/apt/apt.conf.d/20auto-upgrades`
+    * `/etc/apt/apt.conf.d/50unattended-upgrades`
 
-### Beginning with unattended\_upgrades
+### Beginning with andschwa-unattended_upgrades
 
-All you need to do is include the apt module, `include apt`, and this module,
-`include unattended_upgrades` for it to work.
+The simplest use of this module is:
 
-This module relies on the [apt](https://forge.puppetlabs.com/puppetlabs/apt)
-module and will not work without it.
+    include unattended_upgrades
 
-## Usage
+### Usage
 
-Using unattended\_upgrades simply consists of including the module and if needed
-altering some of the default settings.
+This module has one class, `unattended_upgrades`, with the following
+parameters:
 
-## Reference
+    $period                       = 1,                                             # Update period (in days)
+    $repos                        = {},                                            # Repos to upgrade
+    $blacklist                    = [],                                            # Packages to not update
+    $email                        = '',                                            # Email for update status
+    $autofix                      = true,                                          # Ensure updates keep getting ins
+    $minimal_steps                = true,                                          # Allows for shutdown during an u
+    $on_shutdown                  = false,                                         # Install only on shutdown
+    $on_error                     = false,                                         # Email only on errors, else alwa
+    $autoremove                   = false,                                         # Automatically remove unused dep
+    $auto_reboot                  = false,                                         # Automatically reboot if needed
+    $template_unattended_upgrades = 'unattended_upgrades/unattended-upgrades.erb', # Path to config template
+    $template_auto_upgrades       = 'unattended_upgrades/auto-upgrades.erb',       # Path to apt config template
 
-### Classes
 
-* `unattended_upgrades`: Main class, installs the necessary packages and writes
-  the configuration.
+Logs are at the usual `/var/log/unattended-upgrades`, and emails will
+be automatically sent if an email is given.
 
-### Parameters
+The `$minimal_steps` option will split the upgrade into the smallest
+possible chunks, which allows them to be safely interruped (with
+SIGUSR1). There is a small performance penalty, but it lets you
+shutdown the machine while an upgrade is in progess.
 
-#### unattended\_upgrades
+The `$autofix` option determines if unattended-upgrades will, upon
+an unclean dpkg exit, automatically run `dpkg --force-confold
+--configure -a`. It defaults to true so that updates will continue
+being automatically installed.
 
-* `age` (`{}`): A hash of settings with two possible keys:
-  * `min` (`2`): Minimum age of a cache package file. File younger than `min` will
-    not be deleted.
-  * `max` (`0`): Maximum allowed age of a cache package file. File older than `max`
-    will be deleted.
+The `$autoremove` option will clean unused dependencies, further
+configuration is available via the periodic configurations in
+`/etc/apt/apt.conf.d/`.
 
-  Any of these keys can be specified and will be merged into the defaults:
+## Sample 
 
-  ```puppet
-  class { 'unattended_upgrades':
-    age => { 'max' => 10 },
-  }
-  ```
+    # Unattended upgrades
+    $upgrade_blacklist = hiera_array('do_not_upgrade')
+    class {'::unattended_upgrades':
+      period    => '1',
+      repos     => {
+        stable => {
+          label => 'Debian-Security',
+        },
+      },
+      blacklist => $upgrade_blacklist,
+      email     => 'ops@company.com',
+    }
 
-* `auto` (`{}`): A hash of settings with these possible keys:
-  * `clean`(`0`): Remove packages that can no longer be downloaded from cache every
-    X days (`0` = disabled).
-  * `fix_interrupted_dpkg`(`true`): Try to fix package installation state.
-  * `reboot`(`false`): Reboot system after package update installation.
-  * `reboot_time`(`now`): If automatic reboot is enabled and needed, reboot at the
-    specific time (instead of immediately). Expects a string in the format "HH:MM", using the 24 hour clock with leading zeros. Examples:  "16:37" for 37 minutes past 4PM, or "02:03" for 3 minutes past 2AM.
-  * `remove`(`true`): Remove unneeded dependencies after update installation.
+## do_not_upgrade hash
 
-  Any of these keys can be specified and will be merged into the defaults:
+You can define the do_not_upgrade hash in your module or in Hiera. Hiera is a more sensible location for this sort of thing. 
 
-  ```puppet
-  class { 'unattended_upgrades':
-    auto => { 'reboot' => true },
-  }
-  ```
-
-* `backup` (`{}`): A hash with two possible keys:
-  * `archive_internal` (`0`): Backup after n-days if archive contents changed.
-  * `level` (`3`): Backup level.
-
-  Any of these keys can be specified and will be merged into the defaults:
-
-  ```puppet
-  class { 'unattended_upgrades':
-    backup => { 'level' => 5 },
-  }
-  ```
-
-* `blacklist`(`[]`): A list of packages to **not** automatically upgrade.
-* `dl_limit`(`undef`): Use a bandwidth limit for downloading, specified in kb/sec.
-* `enable` (`1`): Enable the automatic installation of updates.
-* `install_on_shutdown` (`false`): Install updates on shutdown instead of in the
-  background.
-* `legacy_origin` (`true` for Debian (squeeze), Ubuntu (precise, trusty, utopic,
-  vivid, wily, xenial, yakkety, zesty, artful, bionic and default), `false` for Debian (wheezy and default)):
-  Use the legacy `Unattended-Upgrade::Allowed-Origins` setting or the modern `Unattended-Upgrade::Origins-Pattern`.
-* `mail`: A hash to configure email behaviour with two possible keys:
-  * `only_on_error` (`true`): Only send mail when something went wrong
-  * `to` (`undef`): Email address to send email too
-
-  If the default for `to` is kept you will not receive any mail at all. You'll
-  likely want to set this parameter.
-
-  Any of these keys can be specified and will be merged into the defaults:
-
-  ```puppet
-  class { 'unattended_upgrades':
-    mail => { 'to' => 'admin@domain.tld', },
-  }
-  ```
-
-* `minimal_steps` (`true`): Split the upgrade process into sections to allow
-  shutdown during upgrade.
-* `origins`: The repositories from which to automatically upgrade included packages.
-* `package_ensure` (`installed`): The ensure state for the 'unattended-upgrades'
-  package.
-* `random_sleep` (`undef`): Maximum amount of time (in seconds) that the apt cron
-  job can sleep before the execution. The exact amount of time will be random but
-  up to the value specified. The purpose is to avoid that servers/mirrors get
-  hammered at exactly the same time when a lot of machines are switched on, e.g.
-  9:00 in the morning. Note: If this is left unset, the default value in the apt
-  cron job applies, which is 1800 seconds.
-* `size` (`0`): Maximum size of the cache in MB.
-* `update` (`1`): Do "apt-get update" automatically every n-days.
-* `upgrade` (`1`): Run the "unattended-upgrade" security upgrade script every n-days.
-* `upgradeable_packages` (`{}`): A hash with two possible keys:
-  * `download_only` (`0`): Do "apt-get upgrade --download-only" every n-days.
-  * `debdelta` (`1`): Use debdelta-upgrade to download updates if available.
-
-  Any of these keys can be specified and will be merged into the defaults:
-
-  ```puppet
-  class { 'unattended_upgrades':
-    upgradeable_packages => { 'debdelta' => 1, },
-  }
-  ```
-
-* `verbose` (`0`): Send report mail to root.
-* `options` (`{}`): A hash of settings with these possible keys:
-  * `force_confdef` (`true`) : Use the default option for new config files if one
-    is available, don't prompt. If no default can be found, you will be prompted
-    unless one of the confold or confnew options is also given
-  * `force_confold` (`true`): Always use the old config files, don't prompt
-  * `force_confnew` (`false`): Always use the new config files, don't prompt
-  * `force_conmiss` (`false`): Always install missing config files
+    {
+      "do_not_upgrade": [
+        "nginx(.*)",
+        "apache2(.*)",
+        "postgresql(.*)",
+        "mysql(.*)",
+        "redis-server",
+        "haproxy",
+        "elasticsearch"
+      ]
+    }
 
 ## Limitations
 
-This module should work across all versions of Debian, Ubuntu, and Linux Mint.
+This module only works on systems using apt package management: Ubuntu
+and Debian (and their derivatives).
 
-## License
+## Development
 
-The original code for this module comes from Evolving Web and was licensed under
-the MIT license. Code added since the fork of that module into puppetlabs-apt is
-covered under the Apache License version 2 as is any code added since it was split
-off into this separate unattended\_upgrades module.
-
-The LICENSE contains both licenses.
+Fork on
+[GitHub](https://github.com/andschwa/puppet-unattended_upgrades), make
+a Pull Request.

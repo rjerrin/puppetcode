@@ -43,6 +43,7 @@ class profile::services::ubase (
 }
     include  'profile::services::upgrade'
     include  'profile::services::time'
+    include  'profile::services::pkg'
 
 
 if $virtualbox['enabled'] == 'yes' {
@@ -51,34 +52,40 @@ if $virtualbox['enabled'] == 'yes' {
 
 #if  $facts['os']['lsb']['distcodename'] != 'orel' {
  
-network_config { $net['interface'] :
-  ensure    => present,
-  family    => 'inet',
-  ipaddress => $net['IP'],
-  method    => 'static',
-  netmask   => $net['netmask'],
-  onboot    => true,
-}
+#network_config { $net['interface'] :
+#  ensure    => present,
+#  family    => 'inet',
+#  ipaddress => $net['IP'],
+#  method    => 'static',
+#  netmask   => $net['netmask'],
+#  onboot    => true,
+#}
 
 #}
+
+
+schedule { 'puppet':
+  period => hourly,
+  repeat => 1,
+}
   
-network_route { 'default':
-  ensure    => present,
-  gateway   => $net['gateway'],
-  netmask   => '0.0.0.0',
-  network   => 'default'
-}
+#network_route { 'default':
+#  ensure    => present,
+#  gateway   => $net['gateway'],
+#  netmask   => '0.0.0.0',
+#  network   => 'default'
+#}
 
-if  $facts['os']['name'] == 'Debian'  {
-  $commands.each  | String $cmd |  {
-    exec { "${cmd}":
-      path => ['/sbin','/usr/bin', '/home/jery',],
-      user => 'root',
+#if  $facts['os']['name'] == 'Debian'  {
+#  $commands.each  | String $cmd |  {
+#    exec { "${cmd}":
+#      path => ['/sbin','/usr/bin', '/home/jery',],
+#      user => 'root',
       
-    }
+#    }
 
-  }
-}
+#  }
+#}
     
  
 class { 'resolv_conf':

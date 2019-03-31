@@ -1,0 +1,22 @@
+From 4a7bb89f40b41ca6abe9babc4d8089f699aef8c8 Mon Sep 17 00:00:00 2001
+From: Christian Spoo <christian.spoo@jtl-software.com>
+Date: Wed, 10 Feb 2016 12:48:21 +0100
+Subject: [PATCH] Add support for overriding origins
+
+---
+ templates/unattended-upgrades.erb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/templates/unattended-upgrades.erb b/templates/unattended-upgrades.erb
+index a77b22a..c13cd4f 100644
+--- a/templates/unattended-upgrades.erb
++++ b/templates/unattended-upgrades.erb
+@@ -1,7 +1,7 @@
+ // Automatically upgrade packages from these origin patterns
+ Unattended-Upgrade::Origins-Pattern {
+ <% scope['unattended_upgrades::repos'].each do |repo, opts| -%>
+-        "origin=${distro_id},archive=<%= repo %><% if (defined? opts) %>,label=<%= opts['label'] %><% end %>";
++        "origin=<% if (defined? opts and opts['origin'] and opts['origin'] != '') %><%= opts['origin'] %><% else %>${distro_id}<% end %>,archive=<%= repo %><% if (defined? opts) %>,label=<%= opts['label'] %><% end %>";
+ <% end %>
+ }; 
+ 

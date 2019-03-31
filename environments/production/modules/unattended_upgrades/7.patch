@@ -1,0 +1,81 @@
+From fc3352c88433f60fa13bdcca8ea6127020567544 Mon Sep 17 00:00:00 2001
+From: Ennio Trojani <ennio.trojani@brands4friends.de>
+Date: Wed, 17 Feb 2016 15:33:45 +0100
+Subject: [PATCH 1/2] Adding support for ubuntu
+
+---
+ templates/unattended-upgrades.erb | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/templates/unattended-upgrades.erb b/templates/unattended-upgrades.erb
+index a77b22a..2526b6a 100644
+--- a/templates/unattended-upgrades.erb
++++ b/templates/unattended-upgrades.erb
+@@ -1,9 +1,16 @@
+ // Automatically upgrade packages from these origin patterns
+-Unattended-Upgrade::Origins-Pattern {
+-<% scope['unattended_upgrades::repos'].each do |repo, opts| -%>
+-        "origin=${distro_id},archive=<%= repo %><% if (defined? opts) %>,label=<%= opts['label'] %><% end %>";
+-<% end %>
+-}; 
++<% if operatingsystem == "Ubuntu" -%>
++	Unattended-Upgrade::Allowed-Origins {
++	<% scope['unattended_upgrades::repos'].each do |repo, opts| -%>
++        	"${distro_id} <%= opts['label'] %>"
++      	<% end -%>
++<% else -%>
++	Unattended-Upgrade::Origins-Pattern {
++	<% scope['unattended_upgrades::repos'].each do |repo, opts| -%>
++        	"origin=${distro_id},archive=<%= repo %><% if (defined? opts) %>,label=<%= opts['label'] %><% end %>";
++	<% end -%>
++<% end -%>
++};
+ 
+ // List of packages to not update
+ Unattended-Upgrade::Package-Blacklist {
+@@ -13,7 +20,7 @@ Unattended-Upgrade::Package-Blacklist {
+ };
+ 
+ // This option allows you to control if on a unclean dpkg exit
+-// unattended-upgrades will automatically run 
++// unattended-upgrades will automatically run
+ //   dpkg --force-confold --configure -a
+ // The default is true, to ensure updates keep getting installed
+ Unattended-Upgrade::AutoFixInterruptedDpkg "<%= scope['unattended_upgrades::autofix'] %>";
+
+From e4801438c2c478c610786876b8725254d990ab0b Mon Sep 17 00:00:00 2001
+From: Ennio Trojani <ennio.trojani@brands4friends.de>
+Date: Wed, 17 Feb 2016 16:14:36 +0100
+Subject: [PATCH 2/2] Adding support for ubuntu
+
+---
+ templates/unattended-upgrades.erb | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/templates/unattended-upgrades.erb b/templates/unattended-upgrades.erb
+index 2526b6a..34966f3 100644
+--- a/templates/unattended-upgrades.erb
++++ b/templates/unattended-upgrades.erb
+@@ -1,14 +1,14 @@
+ // Automatically upgrade packages from these origin patterns
+ <% if operatingsystem == "Ubuntu" -%>
+-	Unattended-Upgrade::Allowed-Origins {
+-	<% scope['unattended_upgrades::repos'].each do |repo, opts| -%>
+-        	"${distro_id} <%= opts['label'] %>"
+-      	<% end -%>
++Unattended-Upgrade::Allowed-Origins {
++<% scope['unattended_upgrades::repos'].each do |repo, opts| -%>
++  "${distro_id} <%= opts['label'] %>"
++<% end -%>
+ <% else -%>
+-	Unattended-Upgrade::Origins-Pattern {
+-	<% scope['unattended_upgrades::repos'].each do |repo, opts| -%>
+-        	"origin=${distro_id},archive=<%= repo %><% if (defined? opts) %>,label=<%= opts['label'] %><% end %>";
+-	<% end -%>
++Unattended-Upgrade::Origins-Pattern {
++<% scope['unattended_upgrades::repos'].each do |repo, opts| -%>
++  "origin=${distro_id},archive=<%= repo %><% if (defined? opts) %>,label=<%= opts['label'] %><% end %>";
++<% end -%>
+ <% end -%>
+ };
+ 
