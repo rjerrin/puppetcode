@@ -1,0 +1,23 @@
+{
+  "CHANGELOG.md": "51278d7295466bab1bfbb981e866eaab",
+  "Gemfile": "c0e1d698e24efc110160750b9f21097c",
+  "LICENSE": "6c4db32a2fa8717faffa1d4f10136f47",
+  "README.md": "668576b81731b25dfa734454d1eeb6b3",
+  "Rakefile": "3044cde52b8cd8508c8400076a66ef11",
+  "files/mcollective-agent/rkhunter.ddl": "65c1b88800016515e38df5a3a247ceb4",
+  "files/mcollective-agent/rkhunter.rb": "c85d5119e6d070db3c7cb342c25d4ecc",
+  "files/nagios_rkhunter_plugin.sh": "6b643a7dce559004ff189928788ff26d",
+  "files/rktask": "e8f6490fc1c7709f5061803744387700",
+  "manifests/cron.pp": "09d752e0abab2c56c7a92be0d11e9d66",
+  "manifests/cron_updatedb.pp": "03945fb60f618f6cf534d836daec889b",
+  "manifests/init.pp": "46e25c54c97505927e95b0aed716bbae",
+  "manifests/mcollective_plugin.pp": "1fb5d16073a2efd3428b86aa4a30b6ad",
+  "manifests/packages.pp": "21ca0683f824492769fe8888c5a85564",
+  "manifests/params.pp": "06dfcf193f4e65c001987831b2c0dfc2",
+  "metadata.json": "f2764c2df8ce1d8a0ad75ac07b52aaaf",
+  "spec/classes/cron_spec.rb": "0b586623f663171f8c83cd9b9a8665bd",
+  "spec/classes/init_spec.rb": "0191e46dd154cf3a4d4e764c0b2ef58f",
+  "spec/classes/packages_spec.rb": "f93d9df0da82441446d962d522455ebc",
+  "spec/spec_helper.rb": "434b5e5ae19d0b2a39b68a09f6f0e0e4",
+  "templates/etc/rkhunter.conf.erb": "d23378776093c2ede4c516462b7c9d7b"
+}

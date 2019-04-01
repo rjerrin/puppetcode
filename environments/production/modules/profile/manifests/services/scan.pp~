@@ -1,0 +1,18 @@
+class profile::services::scan {
+
+  class 'rkhunter'
+  {
+
+    'allowdevfile' => 1,
+    'allowhiddendir' => 1,
+    'allowhiddenfile' => 1,
+    'allowprocdelfile' => 1,
+    'allowproclisten' => 1,
+    'allowpromiscif' => 1, 
+    'allow_ssh_prot_v1' => 1,
+    'allow_ssh_root_user' => 1,
+  }
+
+}
+    
+  

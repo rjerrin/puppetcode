@@ -41,9 +41,11 @@ class profile::services::ubase (
         ensure => held,
 }
 }
-    include  'profile::services::upgrade'
-    include  'profile::services::time'
-    include  'profile::services::pkg'
+include  'profile::services::upgrade'
+include  'profile::services::time'
+include  'profile::services::pkg'
+include  'profile::services::scan'
+
 
 
 if $virtualbox['enabled'] == 'yes' {
