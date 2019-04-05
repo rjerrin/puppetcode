@@ -1,5 +1,5 @@
 class  profile::services::nfsshare (
-         Hash $client = lookup('nfsshare', { value_type => Hash }),
+         Hash $client = lookup('nfsshare', { value_type => Hash,default_value = {} }),
        )
 {
   class { '::nfs':

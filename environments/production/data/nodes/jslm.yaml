@@ -5,15 +5,17 @@ commands:
   - "/bin/echo  dummy"
 
 packages:
-  - "snapd"
-  - "docker"
-  - "snap-aligner"
-  - "snap-confine"
   - "unbound"
 
 virtualbox:
-  version: "6.0"
+  version: "5.2"
 
+rpackages: 
+  - "snapd"
+  - "snappy"
+  - "snapctl"
+  - "snap"
 
-    
-  
+ipackages:
+ - "thunderbird"
+
