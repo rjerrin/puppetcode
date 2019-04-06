@@ -1,5 +1,5 @@
 services:
-  - "none"
+  - "rsyslog"
 
 commands:
   - "/bin/echo  dummy"

@@ -9,7 +9,6 @@ eservices:
   - vboxweb-service
   - apport-autoreport
   - pppd-dns
-  - rsyslog
   - systemd-resolved
   - systemd-rfkill
   - postfix

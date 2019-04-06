@@ -2,7 +2,7 @@ node 'Jslm'
 {
 
 include roles::ubase
-include roles::nfsshare
+#include roles::nfsshare
 include roles::vm
 
 }

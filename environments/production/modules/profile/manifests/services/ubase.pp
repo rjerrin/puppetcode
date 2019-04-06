@@ -1,5 +1,6 @@
 class profile::services::ubase (
   Array $eservices = lookup('eservices', {value_type => Array}),
+  Array $services = lookup('services', {value_type => Array}),
   Hash  $net  =      lookup('networking', { value_type => Hash ,default_value => {} } ),
   Array $ns  = lookup('nameservers', { value_type => Array, default_value => [] }),
   Hash  $sysctl = lookup('sysctl',  { value_type => Hash, default_value => {}  } ),
@@ -25,6 +26,19 @@ class profile::services::ubase (
       }
 
     }
+
+ $services.each | String $service| {
+      service { "${service}":
+        ensure => running,
+        enable => true,
+
+      }
+
+}
+
+
+
+
 }
 
     $ipackages.each | String $pkg | {
