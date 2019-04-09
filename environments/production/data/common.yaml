@@ -1,7 +1,6 @@
 eservices:
   - whoopsie
   - avahi-daemon
-  - snapd
   - kerneloops
   - apport
   - bluetooth
@@ -21,6 +20,8 @@ eservices:
   - nfs-mountd
   - nfs-server
   - nfs-client
+  - nfs-blkmap
+
 
   
   

@@ -7,11 +7,11 @@
 #
 # [*clients*]
 #   String. Sets the allowed clients and options for the export in the exports file.
-#   Defaults to <tt>rbind</tt>
+#   Defaults to <tt>localhost(ro)</tt>
 #
 # [*bind*]
 #   String. Sets the bind options setted in /etc/fstab for the bindmounts created.
-#   Defaults to <tt>localhost(ro)</tt>
+#   Defaults to <tt>rbind</tt>
 #
 # [*ensure*]
 #   String. If enabled the mount will be created. Defaults to <tt>mounted</tt>
@@ -48,6 +48,10 @@
 # [*mode*]
 #   String. Sets the permissions of the exported directory.
 #
+# [*server*]
+#   String. Sets the hostname clients will use to mount the exported resource. If undef it
+#   defaults to the trusted certname
+#
 # === Examples
 #
 # class { '::nfs':
@@ -73,59 +77,73 @@
 #
 
 define nfs::server::export(
-  $v3_export_name = $name,
-  $v4_export_name = regsubst($name, '.*/(.*)', '\1' ),
-  $clients        = 'localhost(ro)',
-  $bind           = 'rbind',
+  $v3_export_name         = $name,
+  $v4_export_name         = regsubst($name, '.*/(.*)', '\1' ),
+  $clients                = 'localhost(ro)',
+  $bind                   = 'rbind',
   # globals for this share
   # propogated to storeconfigs
-  $ensure         = 'mounted',
-  $mount          = undef,
-  $remounts       = false,
-  $atboot         = false,
-  $options_nfsv4  = $::nfs::client_nfsv4_options,
-  $options_nfs    = $::nfs::client_nfs_options,
-  $bindmount      = undef,
-  $nfstag         = undef,
-  $owner          = undef,
-  $group          = undef,
-  $mode           = undef,
+  $ensure                 = 'mounted',
+  $mount                  = undef,
+  $remounts               = false,
+  $atboot                 = false,
+  $options_nfsv4          = $::nfs::client_nfsv4_options,
+  $options_nfs            = $::nfs::client_nfs_options,
+  $bindmount              = undef,
+  $nfstag                 = undef,
+  $owner                  = undef,
+  $group                  = undef,
+  $mode                   = undef,
+  $server                 = $::clientcert,
+  $nfsv4_bindmount_enable = $::nfs::nfsv4_bindmount_enable,
 ) {
 
   if $nfs::server::nfs_v4 {
 
-    nfs::functions::nfsv4_bindmount { $name:
-      ensure         => $ensure,
-      v4_export_name => $v4_export_name,
-      bind           => $bind,
+    if $nfsv4_bindmount_enable {
+      $export_name = $v4_export_name
+      $export_title = "${::nfs::server::nfs_v4_export_root}/${export_name}"
+      $create_export_require = [ Nfs::Functions::Nfsv4_bindmount[$name] ]
+
+      nfs::functions::nfsv4_bindmount { $name:
+        ensure         => $ensure,
+        v4_export_name => $export_name,
+        bind           => $bind,
+      }
+
+    } else {
+      $export_name = $name
+      $export_title = $name
+      $create_export_require = []
     }
 
-    nfs::functions::create_export { "${::nfs::server::nfs_v4_export_root}/${v4_export_name}":
+    nfs::functions::create_export { $export_title:
       ensure  => $ensure,
       clients => $clients,
       owner   => $owner,
       group   => $group,
       mode    => $mode,
-      require => Nfs::Functions::Nfsv4_bindmount[$name],
+      require => $create_export_require,
     }
 
     if $mount != undef {
       $mount_name = $mount
     } else {
-      $mount_name = $v4_export_name
+      $mount_name = $export_name
     }
 
-    @@nfs::client::mount { $mount_name:
-      ensure        => $ensure,
-      remounts      => $remounts,
-      atboot        => $atboot,
-      options_nfsv4 => $options_nfsv4,
-      bindmount     => $bindmount,
-      nfstag        => $nfstag,
-      share         => $v4_export_name,
-      server        => $::clientcert,
+    if $nfs::storeconfigs_enabled {
+      @@nfs::client::mount { $mount_name:
+        ensure        => $ensure,
+        remounts      => $remounts,
+        atboot        => $atboot,
+        options_nfsv4 => $options_nfsv4,
+        bindmount     => $bindmount,
+        nfstag        => $nfstag,
+        share         => $export_name,
+        server        => $server,
+      }
     }
-
   } else {
 
     if $mount != undef {
@@ -142,14 +160,16 @@ define nfs::server::export(
       mode    => $mode,
     }
 
-    @@nfs::client::mount { $mount_name:
-      ensure      => $ensure,
-      remounts    => $remounts,
-      atboot      => $atboot,
-      options_nfs => $options_nfs,
-      nfstag      => $nfstag,
-      share       => $v3_export_name,
-      server      => $::clientcert,
+    if $nfs::storeconfigs_enabled {
+      @@nfs::client::mount { $mount_name:
+        ensure      => $ensure,
+        remounts    => $remounts,
+        atboot      => $atboot,
+        options_nfs => $options_nfs,
+        nfstag      => $nfstag,
+        share       => $v3_export_name,
+        server      => $server,
+      }
     }
 
   }

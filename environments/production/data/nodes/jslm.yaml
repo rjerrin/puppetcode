@@ -1,5 +1,7 @@
 services:
   - "rsyslog"
+  - "snapd"
+
 
 commands:
   - "/bin/echo  dummy"
@@ -10,12 +12,28 @@ packages:
 virtualbox:
   version: "5.2"
 
-rpackages: 
-  - "snapd"
-  - "snappy"
-  - "snapctl"
-  - "snap"
+packages: 
+  - "nfs-common"
+  - "nfs-kernel-server"
+  - "nfs4-acl-tools"
+  - "atftpd"
+
 
 ipackages:
  - "thunderbird"
+ - "snapd"
+ - "snap"
+ - "snappy"
+ - "snapctl"
+ - "android-tools-adb"
+ - "android-tools-fastboot"
+ - "squashfs-tools"
+ - "lzip"
+ - "unzip"
+ - "wget"
+ - "calibre"
+ - "wesnoth"
 
+eservices:
+ -  "sshd"
+ -  "atftpd"

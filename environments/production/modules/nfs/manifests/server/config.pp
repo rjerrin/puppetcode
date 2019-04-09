@@ -16,12 +16,12 @@
 
 class nfs::server::config {
 
-  concat { '/etc/exports':
+  concat { $::nfs::exports_file:
     ensure  => present,
   }
 
   concat::fragment { 'nfs_exports_header':
-    target  => '/etc/exports',
+    target  => $::nfs::exports_file,
     content => "# This file is configured through the nfs::server puppet module\n",
     order   => 1;
   }
@@ -29,7 +29,7 @@ class nfs::server::config {
   if $::nfs::nfs_v4 {
 
     concat::fragment { 'nfs_exports_root':
-      target  => '/etc/exports',
+      target  => $::nfs::exports_file,
       content => "${::nfs::server::nfs_v4_export_root} ${::nfs::server::nfs_v4_export_root_clients}\n",
       order   => 2,
     }
@@ -40,22 +40,47 @@ class nfs::server::config {
       }
     }
 
+    if $::nfs::nfs_v4_idmap_localrealms != '' {
+      if $::nfs::nfs_v4_idmap_localrealms =~ String {
+        $_localrealms = $::nfs::nfs_v4_idmap_localrealms
+      } else {
+        $_localrealms = join($::nfs::nfs_v4_idmap_localrealms, ',')
+      }
+      $_aug_localrealm = "set General/Local-Realms ${_localrealms}"
+    } else {
+      $_aug_localrealm = undef
+    }
+
+    if $::nfs::nfs_v4_idmap_cache != 0 {
+      $_cache = "set General/Cache-Expiration ${::nfs::nfs_v4_idmap_cache}"
+    } else {
+      $_cache = undef
+    }
+
+    if $::nfs::manage_nfs_v4_idmap_nobody_mapping {
+      $_user = "set Mapping/Nobody-User ${::nfs::nfs_v4_idmap_nobody_user}"
+      $_group = "set Mapping/Nobody-Group ${::nfs::nfs_v4_idmap_nobody_group}"
+    } else {
+      $_user = undef
+      $_group = undef
+    }
     augeas { $::nfs::idmapd_file:
-      context => "/files/${::nfs::idmapd_file}/General",
+      context => "/files/${::nfs::idmapd_file}",
       lens    => 'Puppet.lns',
       incl    => $::nfs::idmapd_file,
-      changes => ["set Domain ${::nfs::server::nfs_v4_idmap_domain}"],
+      changes => delete_undef_values(["set General/Domain ${::nfs::server::nfs_v4_idmap_domain}", $_aug_localrealm, $_cache, $_user, $_group]);
     }
 
-    @@nfs::client::mount { $::nfs::nfs_v4_mount_root:
-      ensure        => $::nfs::server::nfs_v4_root_export_ensure,
-      server        => $::clientcert,
-      remounts      => $::nfs::server::nfs_v4_root_export_remounts,
-      atboot        => $::nfs::server::nfs_v4_root_export_atboot,
-      options_nfsv4 => $::nfs::server::nfs_v4_root_export_options,
-      bindmount     => $::nfs::server::nfs_v4_root_export_bindmount,
-      nfstag        => $::nfs::server::nfs_v4_root_export_tag,
+    if $nfs::storeconfigs_enabled {
+      @@nfs::client::mount { $::nfs::nfs_v4_mount_root:
+        ensure        => $::nfs::server::nfs_v4_root_export_ensure,
+        server        => $::clientcert,
+        remounts      => $::nfs::server::nfs_v4_root_export_remounts,
+        atboot        => $::nfs::server::nfs_v4_root_export_atboot,
+        options_nfsv4 => $::nfs::server::nfs_v4_root_export_options,
+        bindmount     => $::nfs::server::nfs_v4_root_export_bindmount,
+        nfstag        => $::nfs::server::nfs_v4_root_export_tag,
+      }
     }
-
   }
 }

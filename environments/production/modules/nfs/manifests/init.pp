@@ -26,6 +26,10 @@
 #   to act as a client server, you can use the exported mount resources
 #   from configured servers.
 #
+# [*storeconfigs_enabled*]
+#   Boolean. If set to <tt>false</tt>, this module will not export any
+#   resources as storeconfigs. Defaults to <tt>true</tt>.
+#
 # [*nfs_v4*]
 #   Boolean. If set to <tt>true</tt>, this module will use nfs version 4
 #   for exporting and mounting nfs resources.
@@ -40,10 +44,10 @@
 #   by the nfs server.
 #
 # [*idmapd_file*]
-#   String. It defines the location of th file with the idmapd settings.
+#   String. It defines the location of the file with the idmapd settings.
 #
 # [*defaults_file*]
-#   String. It defines the location of th file with the nfs settings.
+#   String. It defines the location of the file with the nfs settings.
 #
 # [*manage_packages*]
 #   Boolean. It defines if the packages should be managed through this module
@@ -92,7 +96,7 @@
 #   String. It defines the service parameter restart for nfs server service.
 #
 # [*server_nfsv4_servicehelper*]
-#   String. It defines the service helper like idmapd for servers configured with
+#   Array. It defines the service helper like idmapd for servers configured with
 #   nfs version 4.
 #
 # [*client_services*]
@@ -101,6 +105,9 @@
 # [*client_nfsv4_services*]
 #   Nested Hash. It defines the servicenames need to be started when acting as a nfs client
 #   version 4.
+#
+# [*client_services_enable*]
+#   Boolean. It defines the service parameter enable for nfs client services.
 #
 # [*client_service_hasrestart*]
 #   Boolean. It defines the service parameter hasrestart for nfs client services.
@@ -146,8 +153,46 @@
 #   to be set to the same value on a server and client node to do correct uid and gid
 #   mapping. Defaults to <tt>$::domain</tt>.
 #
-# [*$nfs_v4_root_export**]
-#   Vary. These settings define the options of the exported resource of the export root.
+# [*nfsv4_bindmount_enable*]
+#   Boolean. It defines if the module should create a bindmount for the export.
+#   Defaults to <tt>true</tt>.
+#
+# [*client_need_gssd*]
+#   Boolean. If true, sets NEED_GSSD=yes in /etc/defauls/nfs-common, usable on Debian/Ubuntu
+#
+# [*client_gssd_service*]
+#   Boolean. If true enable rpc-gssd service.
+#
+# [*client_gssd_options*]
+#   String. Options for rpc-gssd service. Defaults to <tt>''</tt>
+#
+# [*client_d9_gssdopt_workaround*]
+#   Boolean. If enabled, workaround for passing gssd_options which is broken on Debian 9. Usable only on Debian 9
+#
+# [*nfs_v4_idmap_localrealms*]
+#   String or Array. 'Local-Realms' option for idmapd. Defaults to <tt>''</tt>
+#
+# [*nfs_v4_idmap_cache*]
+#   Integer. 'Cache-Expiration' option for idmapd. Defaults to <tt>0</tt> - unused.
+#
+# [*manage_nfs_v4_idmap_nobody_mapping*]
+#   Boolean. Enable setting Nobody mapping in idmapd. Defaults to <tt>false</tt>.
+#
+# [*nfs_v4_idmap_nobody_user*]
+#   String. 'Nobody-User' option for idmapd. Defaults to <tt>nobody</tt>.
+#
+# [*nfs_v4_idmap_nobody_group*]
+#   String. 'Nobody-Group' option for idmapd. Defaults to <tt>nobody</tt> or <tt>nogroup</tt>. 
+#
+# [*client_rpcbind_config*]
+#   String. It defines the location of the file with the rpcbind config.
+#
+# [*client_rpcbind_optname*]
+#   String. It defines the name of env variable that holds the rpcbind config. E.g. OPTIONS for Debian
+#
+# [*client_rpcbind_opts*]
+#   String. Options for rpcbind service.
+#
 #
 # === Examples
 #
@@ -165,113 +210,67 @@
 #
 
 class nfs(
-  $ensure                       = 'present',
-  $server_enabled               = false,
-  $client_enabled               = false,
-  $nfs_v4                       = $::nfs::params::nfs_v4,
-  $nfs_v4_client                = $::nfs::params::nfs_v4,
-  $exports_file                 = $::nfs::params::exports_file,
-  $idmapd_file                  = $::nfs::params::idmapd_file,
-  $defaults_file                = $::nfs::params::defaults_file,
-  $manage_packages              = true,
-  $server_packages              = $::nfs::params::server_packages,
-  $server_package_ensure        = 'installed',
-  $client_packages              = $::nfs::params::client_packages,
-  $client_package_ensure        = 'installed',
-  $manage_server_service        = true,
-  $manage_server_servicehelper  = true,
-  $manage_client_service        = true,
-  $server_service_name          = $::nfs::params::server_service_name,
-  $server_service_ensure        = 'running',
-  $server_service_enable        = true,
-  $server_service_hasrestart    = $::nfs::params::server_service_hasrestart,
-  $server_service_hasstatus     = $::nfs::params::server_service_hasstatus,
-  $server_service_restart_cmd   = $::nfs::params::server_service_restart_cmd,
-  $server_nfsv4_servicehelper   = $::nfs::params::server_nfsv4_servicehelper,
-  $client_services              = $::nfs::params::client_services,
-  $client_nfsv4_services        = $::nfs::params::client_nfsv4_services,
-  $client_services_hasrestart   = $::nfs::params::client_services_hasrestart,
-  $client_services_hasstatus    = $::nfs::params::client_services_hasstatus,
-  $client_idmapd_setting        = $::nfs::params::client_idmapd_setting,
-  $client_nfs_fstype            = $::nfs::params::client_nfs_fstype,
-  $client_nfs_options           = $::nfs::params::client_nfs_options,
-  $client_nfsv4_fstype          = $::nfs::params::client_nfsv4_fstype,
-  $client_nfsv4_options         = $::nfs::params::client_nfsv4_options,
-  $nfs_v4_export_root           = $::nfs::params::nfs_v4_export_root,
-  $nfs_v4_export_root_clients   = $::nfs::params::nfs_v4_export_root_clients,
-  $nfs_v4_mount_root            = $::nfs::params::nfs_v4_mount_root,
-  $nfs_v4_idmap_domain          = $::nfs::params::nfs_v4_idmap_domain,
-  $nfs_v4_root_export_ensure    = 'mounted',
-  $nfs_v4_root_export_mount     = undef,
-  $nfs_v4_root_export_remounts  = false,
-  $nfs_v4_root_export_atboot    = false,
-  $nfs_v4_root_export_options   = '_netdev',
-  $nfs_v4_root_export_bindmount = undef,
-  $nfs_v4_root_export_tag       = undef,
+  Enum['present', 'absent', 'running', 'stopped', 'disabled'] $ensure                 = 'present',
+  Boolean $server_enabled                                                             = false,
+  Boolean $client_enabled                                                             = false,
+  Boolean $storeconfigs_enabled                                                       = true,
+  Boolean $nfs_v4                                                                     = $::nfs::params::nfs_v4,
+  Boolean $nfs_v4_client                                                              = $::nfs::params::nfs_v4,
+  Stdlib::Absolutepath $exports_file                                                  = $::nfs::params::exports_file,
+  Stdlib::Absolutepath $idmapd_file                                                   = $::nfs::params::idmapd_file,
+  Optional[Stdlib::Absolutepath] $defaults_file                                       = $::nfs::params::defaults_file,
+  Boolean $manage_packages                                                            = true,
+  Array $server_packages                                                              = $::nfs::params::server_packages,
+  String $server_package_ensure                                                       = 'installed',
+  Array $client_packages                                                              = $::nfs::params::client_packages,
+  String $client_package_ensure                                                       = 'installed',
+  Boolean $manage_server_service                                                      = true,
+  Boolean $manage_server_servicehelper                                                = true,
+  Boolean $manage_client_service                                                      = true,
+  String $server_service_name                                                         = $::nfs::params::server_service_name,
+  Enum['present', 'absent', 'running', 'stopped', 'disabled'] $server_service_ensure  = 'running',
+  Boolean $server_service_enable                                                      = true,
+  Boolean $server_service_hasrestart                                                  = $::nfs::params::server_service_hasrestart,
+  Boolean $server_service_hasstatus                                                   = $::nfs::params::server_service_hasstatus,
+  Optional[String] $server_service_restart_cmd                                        = $::nfs::params::server_service_restart_cmd,
+  Optional[Array] $server_nfsv4_servicehelper                                         = $::nfs::params::server_nfsv4_servicehelper,
+  $client_services                                                                    = $::nfs::params::client_services,
+  $client_nfsv4_services                                                              = $::nfs::params::client_nfsv4_services,
+  Boolean $client_services_enable                                                     = $::nfs::params::client_services_enable,
+  Boolean $client_services_hasrestart                                                 = $::nfs::params::client_services_hasrestart,
+  Boolean $client_services_hasstatus                                                  = $::nfs::params::client_services_hasstatus,
+  Array[String] $client_idmapd_setting                                                = $::nfs::params::client_idmapd_setting,
+  String $client_nfs_fstype                                                           = $::nfs::params::client_nfs_fstype,
+  String $client_nfs_options                                                          = $::nfs::params::client_nfs_options,
+  String $client_nfsv4_fstype                                                         = $::nfs::params::client_nfsv4_fstype,
+  String $client_nfsv4_options                                                        = $::nfs::params::client_nfsv4_options,
+  Boolean $client_need_gssd                                                           = false,
+  Boolean $client_gssd_service                                                        = false,
+  $client_gssd_service_name                                                           = $::nfs::params::client_gssd_service_name,
+  String $client_gssd_options                                                         = $::nfs::params::client_gssd_options,
+  String $client_gssdopt_name                                                         = $::nfs::params::client_gssdopt_name,
+  Boolean $client_d9_gssdopt_workaround                                               = false,
+  String $nfs_v4_export_root                                                          = $::nfs::params::nfs_v4_export_root,
+  String $nfs_v4_export_root_clients                                                  = $::nfs::params::nfs_v4_export_root_clients,
+  String $nfs_v4_mount_root                                                           = $::nfs::params::nfs_v4_mount_root,
+  String $nfs_v4_idmap_domain                                                         = $::nfs::params::nfs_v4_idmap_domain,
+  Variant[String, Array] $nfs_v4_idmap_localrealms                                    = '',
+  Integer $nfs_v4_idmap_cache                                                         = 0,
+  Boolean $manage_nfs_v4_idmap_nobody_mapping                                         = false,
+  String $nfs_v4_idmap_nobody_user                                                    = $::nfs::params::nfs_v4_idmap_nobody_user,
+  String $nfs_v4_idmap_nobody_group                                                   = $::nfs::params::nfs_v4_idmap_nobody_group,
+  String $nfs_v4_root_export_ensure                                                   = 'mounted',
+  Optional[String] $nfs_v4_root_export_mount                                          = undef,
+  Boolean $nfs_v4_root_export_remounts                                                = false,
+  Boolean $nfs_v4_root_export_atboot                                                  = false,
+  String $nfs_v4_root_export_options                                                  = '_netdev',
+  Optional[String] $nfs_v4_root_export_bindmount                                      = undef,
+  Optional[String] $nfs_v4_root_export_tag                                            = undef,
+  Boolean $nfsv4_bindmount_enable                                                     = true,
+  Optional[Stdlib::Absolutepath] $client_rpcbind_config                               = $::nfs::params::client_rpcbind_config,
+  Optional[String] $client_rpcbind_optname                                            = $::nfs::params::client_rpcbind_optname,
+  Optional[String] $client_rpcbind_opts                                               = undef,
 ) inherits nfs::params {
-
-  # validate all params
-
-  if ! ($ensure in [ 'present', 'absent', 'running', 'stopped', 'disabled' ]) {
-    fail("\"${$ensure}\" is not a valid ensure parameter value")
-  }
-
-  validate_bool($server_enabled)
-  validate_bool($client_enabled)
-  validate_bool($nfs_v4)
-  validate_bool($nfs_v4_client)
-  validate_string($exports_file)
-  validate_string($idmapd_file)
-  validate_string($defaults_file)
-  validate_bool($manage_packages)
-  validate_array($server_packages)
-  validate_string($server_package_ensure)
-  validate_array($client_packages)
-  validate_string($client_package_ensure)
-  validate_bool($manage_server_service)
-  validate_bool($manage_server_servicehelper)
-  validate_bool($manage_client_service)
-  validate_string($server_service_name)
-
-  if ! ($server_service_ensure in [ 'present', 'absent', 'running', 'stopped', 'disabled' ]) {
-    fail("\"${server_service_ensure}\" is not a valid ensure parameter value")
-  }
-
-  validate_bool($server_service_enable)
-  validate_bool($server_service_hasrestart)
-  validate_bool($server_service_hasstatus)
-  validate_string($server_service_restart_cmd)
-  validate_string($server_nfsv4_servicehelper)
-  validate_hash($client_services)
-  validate_hash($client_nfsv4_services)
-  validate_bool($client_services_hasrestart)
-  validate_bool($client_services_hasstatus)
-  validate_array($client_idmapd_setting)
-  validate_string($client_nfs_fstype)
-  validate_string($client_nfs_options)
-  validate_string($client_nfsv4_fstype)
-  validate_string($client_nfsv4_options)
-  validate_string($nfs_v4_export_root)
-  validate_string($nfs_v4_export_root_clients)
-  validate_string($nfs_v4_mount_root)
-  validate_string($nfs_v4_idmap_domain)
-  validate_string($nfs_v4_root_export_ensure)
-
-  if $nfs_v4_root_export_mount != undef  {
-    validate_string($nfs_v4_root_export_mount)
-  }
-
-  validate_bool($nfs_v4_root_export_remounts)
-  validate_bool($nfs_v4_root_export_atboot)
-  validate_string($nfs_v4_root_export_options)
-
-  if $nfs_v4_root_export_bindmount != undef  {
-    validate_string($nfs_v4_root_export_bindmount)
-  }
-
-  if $nfs_v4_root_export_tag != undef  {
-    validate_string($nfs_v4_root_export_tag)
-  }
 
   if $server_enabled {
 
@@ -285,8 +284,12 @@ class nfs(
     $effective_client_packages = difference($client_packages, $server_packages)
 
   } else {
+    if $client_gssd_service and $client_gssd_service_name != undef {
+      $effective_nfsv4_client_services = $client_nfsv4_services + $client_gssd_service_name
+    } else {
+      $effective_nfsv4_client_services = $client_nfsv4_services
+    }
 
-    $effective_nfsv4_client_services = $client_nfsv4_services
     $effective_client_services = $client_services
     $effective_client_packages = $client_packages
 

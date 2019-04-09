@@ -442,11 +442,7 @@ on_supported_os.reject { |_, f| f[:os]['family'] == 'Solaris' }.each do |os, f|
             it 'uses the freebsd ntp servers' do
               is_expected.to contain_file('/etc/ntp.conf').with('content' => %r{server \d.freebsd.pool.ntp.org iburst maxpoll 9})
             end
-          when 'Archlinux'
-            it 'uses the Archlinux NTP servers' do
-              is_expected.to contain_file('/etc/ntp.conf').with('content' => %r{server \d.arch.pool.ntp.org})
-            end
-          when 'Solaris', 'Gentoo'
+          when 'Solaris'
             it 'uses the generic NTP pool servers' do
               is_expected.to contain_file('/etc/inet/ntp.conf').with('content' => %r{server \d.pool.ntp.org})
             end
@@ -796,6 +792,33 @@ on_supported_os.reject { |_, f| f[:os]['family'] == 'Solaris' }.each do |os, f|
 
           it 'does not contain a logfile line' do
             is_expected.not_to contain_file('/etc/ntp.conf').with('content' => %r{logfile })
+          end
+        end
+      end
+
+      describe 'with parameter logconfig' do
+        context 'when set to true' do
+          let(:params) do
+            {
+              servers: ['a', 'b', 'c', 'd'],
+              logconfig: '=syncall +peerinfo',
+            }
+          end
+
+          it 'contains logconfig setting' do
+            is_expected.to contain_file('/etc/ntp.conf').with('content' => %r{^logconfig =syncall \+peerinfo\n})
+          end
+        end
+
+        context 'when set to false' do
+          let(:params) do
+            {
+              servers: ['a', 'b', 'c', 'd'],
+            }
+          end
+
+          it 'does not contain a logconfig line' do
+            is_expected.not_to contain_file('/etc/ntp.conf').with('content' => %r{logconfig })
           end
         end
       end

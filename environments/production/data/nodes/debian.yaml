@@ -22,7 +22,6 @@ commands:
   - "/home/jery/minikube  stop"
 
 ipackages:
-  - "nfs-common"
   - "openssh-server"
   - "build-essential"
   - "linux-source"
