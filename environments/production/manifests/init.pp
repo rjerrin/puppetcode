@@ -10,15 +10,25 @@ include roles::torsvc
 
 node 'debian'
 {
+
 include roles::ubase
+
 
 }
 
 node 'astra'
 {
+
 include roles::ubase
+
 }
 
+node 'fbsd'
+{
+
+include roles::fbase
+
+}
 
 
 
