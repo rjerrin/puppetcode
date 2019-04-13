@@ -1,10 +1,10 @@
 class profile::services::fbase (
 #   Array $packages = lookup('packages', {value_type => Array, default_value => [] }),
-   Array $ipackages = lookup('ipackages', {value_type => Array, default_value => [] }),
+    Array $ipackages = lookup('ipackages', {value_type => Array, default_value => [] }),
 #   Array $held = lookup('held', {value_type => Array, default_value => [] }),
 #   Hash  $files  = lookup('files',  { value_type => Hash, default_value => {} } ),
 #   Hash  $fcontent  = lookup('fcontent',  { value_type => Hash, default_value => {} } ),
-)
+){
 
     $ipackages.each | String $pkg | {
       package { $pkg:
