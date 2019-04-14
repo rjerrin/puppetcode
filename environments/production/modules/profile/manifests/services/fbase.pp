@@ -1,9 +1,7 @@
 class profile::services::fbase (
-#   Array $packages = lookup('packages', {value_type => Array, default_value => [] }),
     Array $ipackages = lookup('ipackages', {value_type => Array, default_value => [] }),
-#   Array $held = lookup('held', {value_type => Array, default_value => [] }),
-#   Hash  $files  = lookup('files',  { value_type => Hash, default_value => {} } ),
-#   Hash  $fcontent  = lookup('fcontent',  { value_type => Hash, default_value => {} } ),
+    Hash  $fcontent  = lookup('facontent',  { value_type => Array, default_value => [] } ),
+    Array $eservices = lookup('eservices', {value_type => Array}),
 ){
 
     $ipackages.each | String $pkg | {
@@ -15,13 +13,28 @@ class profile::services::fbase (
 
 }
 
+
+$eservices.each | String $service| {
+      service { "${service}":
+        ensure => stopped,
+        enable => false,
+        
+      }
+
+    }
+
+
+$fcontent.each |  String $content | {
+  file_line { 'fcontent':
+    ensure => present,
+    path   => "/etc/rc.conf",
+    line   => $content,
+    match  => "^${content}",
+  }
+  
 }
 
-  
 
 
- 
+}
 
-
-        
-       
