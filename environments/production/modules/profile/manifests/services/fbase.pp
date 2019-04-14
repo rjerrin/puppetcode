@@ -1,8 +1,13 @@
 class profile::services::fbase (
     Array $ipackages = lookup('ipackages', {value_type => Array, default_value => [] }),
-    Array $fcontent  = lookup('facontent',  { value_type => Array, default_value => [] } ),
-    Array $eservices = lookup('eservices', {value_type => Array}),
+    Array $facontent  = lookup('facontent',  { value_type => Array, default_value => [] } ),
+    Array $services = lookup('services', {value_type => Array}),
 ){
+
+include profile::services::time
+include profile::services::fcron
+include profile::services::ns
+include pf
 
     $ipackages.each | String $pkg | {
       package { $pkg:
@@ -14,23 +19,25 @@ class profile::services::fbase (
 }
 
 
-$eservices.each | String $service| {
+$services.each | String $service| {
       service { "${service}":
-        ensure => stopped,
-        enable => false,
+        ensure => running,
+        enable => true,
         
       }
 
     }
 
 
-$fcontent.each |  String $content | {
-  file_line { 'fcontent':
+$facontent.each |  String $content | {
+  if ! defined {
+  file_line { "/etc/rc.conf" :
     ensure => present,
     path   => "/etc/rc.conf",
     line   => $content,
     match  => "^${content}",
   }
+}
   
 }
 

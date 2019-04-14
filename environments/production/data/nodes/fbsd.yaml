@@ -5,23 +5,28 @@ ipackages:
   -  "xfce4-desktop"
   -  "xfce4-session"
   -  "firefox"
+  -  "slim"
+  -  "puppet-mode.el-emacs26"
 
-fcontent:
-  "cbsd_workdir"=\"/usr/local/vms\"
-  "cbsdrsyncd_flags"=\"--config=/usr/local/vms/etc/rsyncd.conf\"
-  "rcshutdown_timeout"=\"900\"
-  "kld_list"=\"if_bridge if_tap nmdm  /boot/modules/i915kms.ko\"
-  "sshd_flags"=\"-oPort=22222\"
-  "dumpdev"=\"AUTO\"
+facontent:
+  - cbsd_workdir=\"/usr/local/vms\"
+  - cbsdrsyncd_flags=\"--config=/usr/local/vms/etc/rsyncd.conf\"
+  - rcshutdown_timeout=\"900\"
+  - kld_list=\"/boot/modules/i915kms.ko if_bridge if_tap nmdm\"  
+  - sshd_flags=\"-oPort=22222\"
+  - dumpdev=\"AUTO\"
 
 
-eservices:
+services:
    - "dbus"
-   - "avahi_daemon"
-   - "avahi_dnsconfd"
+   - "avahi-daemon"
+   - "avahi-dnsconfd"
    - "hald" 
    - "slim"
    - "cbsdd"
-     
+
+fcron:
+   - "/usr/sbin/pkg upgrade -y"
+   - "/usr/sbin/freebsd-update fetch && /usr/sbin/freebsd-update install"
 
 
