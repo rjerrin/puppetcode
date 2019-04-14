@@ -1,6 +1,6 @@
 class profile::services::fbase (
     Array $ipackages = lookup('ipackages', {value_type => Array, default_value => [] }),
-    Hash  $fcontent  = lookup('facontent',  { value_type => Array, default_value => [] } ),
+    Array $fcontent  = lookup('facontent',  { value_type => Array, default_value => [] } ),
     Array $eservices = lookup('eservices', {value_type => Array}),
 ){
 
