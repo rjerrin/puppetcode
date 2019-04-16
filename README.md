@@ -1,2 +1,2 @@
 # puppetcode
-puppetserver 6.0 using hiera
+puppetserver 6.0 using hiera test
