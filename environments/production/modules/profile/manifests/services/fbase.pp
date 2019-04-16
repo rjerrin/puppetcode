@@ -30,14 +30,12 @@ $services.each | String $service| {
 
 
 $facontent.each |  String $content | {
-  if ! defined {
-  file_line { "/etc/rc.conf" :
+  file_line { $content :
     ensure => present,
     path   => "/etc/rc.conf",
     line   => $content,
     match  => "^${content}",
   }
-}
   
 }
 
