@@ -1,6 +1,6 @@
 class profile::services::ubase (
-  Array $eservices = lookup('eservices', {value_type => Array}),
-  Array $services = lookup('services', {value_type => Array}),
+  Array $eservices = lookup('eservices', {value_type => Array, default_value => []}),
+  Array $services = lookup('services', {value_type => Array, default_value => [] }),
   Hash  $net  =      lookup('networking', { value_type => Hash ,default_value => {} } ),
   Array $ns  = lookup('nameservers', { value_type => Array, default_value => [] }),
   Hash  $sysctl = lookup('sysctl',  { value_type => Hash, default_value => {}  } ),
@@ -59,6 +59,7 @@ include  'profile::services::upgrade'
 include  'profile::services::time'
 include  'profile::services::pkg'
 include  'profile::services::scan'
+include  'profile::services::debcron'
 
 
 

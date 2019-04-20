@@ -1,7 +1,8 @@
 class profile::services::fbase (
-    Array $ipackages = lookup('ipackages', {value_type => Array, default_value => [] }),
-    Array $facontent  = lookup('facontent',  { value_type => Array, default_value => [] } ),
-    Array $services = lookup('services', {value_type => Array}),
+    Array $ipackages =   lookup('ipackages', {value_type => Array, default_value => [] }),
+    Array $rcconf  =  lookup('rcconf',  { value_type => Array, default_value => [] } ),
+    Array $loaderconf  = lookup('loaderconf',  { value_type => Array, default_value => [] } ),		
+    Array $services =    lookup('services', {value_type => Array}),
 ){
 
 include profile::services::time
@@ -29,7 +30,7 @@ $services.each | String $service| {
     }
 
 
-$facontent.each |  String $content | {
+$rcconf.each |  String $content | {
   file_line { $content :
     ensure => present,
     path   => "/etc/rc.conf",
@@ -40,6 +41,15 @@ $facontent.each |  String $content | {
 }
 
 
+$loaderconf.each |  String $content | {
+  file_line { $content :
+    ensure => present,
+    path   => "/boot/loader.conf",
+    line   => $content,
+    match  => "^${content}",
+  }
+
+}
 
 }
 

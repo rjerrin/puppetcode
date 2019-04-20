@@ -9,18 +9,39 @@ ipackages:
   -  "puppet-mode.el-emacs26"
   -  "transmission-gtk"
   -  "mplayer"
+  -  "vim"
+  -  "tor"
+  -  "pkg"
+  -  "gstreamer-plugins-lame"
+  -  "calibre"
+  -  "chromium"
+  -  "tightvnc"
+  -  "dnsrecon"
+  -  "sndio"
+  -  "audacity"
+  
 
-facontent:
+rcconf:
   - cbsd_workdir="/usr/local/vms"
   - cbsdrsyncd_flags="--config=/usr/local/vms/etc/rsyncd.conf"
   - rcshutdown_timeout="900"
-  - kld_list="/boot/modules/i915kms.ko if_bridge if_tap nmdm"  
-  - sshd_flags="-oPort=22222"
+  - kld_list="/boot/modules/i915kms.ko if_bridge if_tap nmdm"   - sshd_flags="-oPort=22222"
   - dumpdev="AUTO"
-  - powerd_flags="-a adaptive"
+  - powerd_flags="-a minimum"
   - powerd_enable="YES"
+  - sndiod_enable="YES" 
 
-
+loaderconf:
+  - aesni_load="YES"
+  - cc_htcp_load="YES"
+  - coretemp_load="YES"
+  - cuse4bsd_load="YES"
+  - libiconv_load="YES"
+  - fuse_load="YES"
+  - libmchain_load="YES"
+  - cd9660_iconv_load="YES"
+  - msdosfs_iconv_load="YES"
+  - tmpfs_load="YES"
 
 services:
    - "dbus"
@@ -29,9 +50,10 @@ services:
    - "hald" 
    - "slim"
    - "cbsdd"
+   - "tor"
+   - "powerd"
+   - "sndiod"
 
 fcron:
    - "/usr/sbin/pkg upgrade -y"
    - "/usr/sbin/freebsd-update fetch && /usr/sbin/freebsd-update install"
-
-

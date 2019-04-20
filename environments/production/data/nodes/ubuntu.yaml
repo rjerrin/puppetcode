@@ -1,0 +1,17 @@
+packages:
+  - "unbound"
+
+
+packages: 
+  - "nfs-common"
+  - "nfs-kernel-server"
+  - "nfs4-acl-tools"
+  - "atftpd"
+
+
+ipackages:
+ - "python"
+ - "git"
+
+services:
+ -  "sshd"
