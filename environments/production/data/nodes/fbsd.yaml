@@ -19,17 +19,22 @@ ipackages:
   -  "dnsrecon"
   -  "sndio"
   -  "audacity"
+  -  "pulseaudio-module-sndio"
+  -  "pulseaudio-module-xrdp"
+  -  "gstreamer1-plugins-lame"
+  -  "devcpu-data"
   
 
 rcconf:
   - cbsd_workdir="/usr/local/vms"
   - cbsdrsyncd_flags="--config=/usr/local/vms/etc/rsyncd.conf"
   - rcshutdown_timeout="900"
-  - kld_list="/boot/modules/i915kms.ko if_bridge if_tap nmdm"   - sshd_flags="-oPort=22222"
+  - kld_list="/boot/modules/i915kms.ko if_bridge if_tap nmdm"  
   - dumpdev="AUTO"
   - powerd_flags="-a minimum"
   - powerd_enable="YES"
   - sndiod_enable="YES" 
+  - microcode_update_enable="YES"
 
 loaderconf:
   - aesni_load="YES"
@@ -42,6 +47,10 @@ loaderconf:
   - cd9660_iconv_load="YES"
   - msdosfs_iconv_load="YES"
   - tmpfs_load="YES"
+  - cpu_microcode_load="YES"
+  - cpu_microcode_name="/boot/firmware/intel-ucode.bin"
+  - cpuctl_load="YES"
+
 
 services:
    - "dbus"
@@ -53,6 +62,7 @@ services:
    - "tor"
    - "powerd"
    - "sndiod"
+   - "microcode_update"
 
 fcron:
    - "/usr/sbin/pkg upgrade -y"
