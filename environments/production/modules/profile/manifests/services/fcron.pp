@@ -17,6 +17,14 @@ cron { 'freebsd-update':
 
 }
 
+cron { 'puppet-agent':
+  command => '/usr/local/bin/puppet agent -t -v --server puppet',
+  user    => 'root',
+  hour    => ['0-23'],
+  minute  => '*/30',
+}
+
+
 
 
      
