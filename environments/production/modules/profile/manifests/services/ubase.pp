@@ -57,11 +57,8 @@ class profile::services::ubase (
 }
 include  'profile::services::upgrade'
 include  'profile::services::time'
-#include  'profile::services::pkg'
 include  'profile::services::scan'
 include  'profile::services::debcron'
-
-
 
 if $virtualbox['enabled'] == 'yes' {
    include 'profile::services::vbox'
@@ -113,8 +110,9 @@ $sysctl.each | String $sysvar, String $value | {
   sysctl { $sysvar:
     ensure => present,
     value =>  $value,
-  }
-
+  
+}
+  
 }
 
 

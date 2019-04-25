@@ -24,6 +24,7 @@ ipackages:
   -  "gstreamer1-plugins-lame"
   -  "devcpu-data"
   -  "thunderbird"
+  -  "choqok"
   
 
 rcconf:
