@@ -1,5 +1,5 @@
 class profile::services::upgrade () {
-
+include apt
 
 cron { 'upgrade':
 
@@ -11,14 +11,10 @@ cron { 'upgrade':
 }
 
 $upgrade_blacklist = hiera_array('held')
-class {'::unattended_upgrades':
-  period    => '1',
-  repos     => {
-    },
-   blacklist => $upgrade_blacklist,
-}
-
-
-
-
+class {'unattended_upgrades':
+  legacy_origin => false,
+  origins => [],
+  upgradeable_packages => { 'debdelta' => 1, },	
+    }
+  
 }

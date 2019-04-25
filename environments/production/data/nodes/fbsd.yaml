@@ -23,6 +23,7 @@ ipackages:
   -  "pulseaudio-module-xrdp"
   -  "gstreamer1-plugins-lame"
   -  "devcpu-data"
+  -  "thunderbird"
   
 
 rcconf:

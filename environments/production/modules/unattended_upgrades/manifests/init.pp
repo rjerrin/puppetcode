@@ -1,48 +1,78 @@
-class unattended_upgrades(
-  $period                       = 1,                                             # Update period (in days)
-  $repos                        = {},                                            # Repos to upgrade
-  $blacklist                    = [],                                            # Packages to not update
-  $email                        = '',                                            # Email for update status
-  $autofix                      = true,                                          # Ensure updates keep getting installed
-  $minimal_steps                = true,                                          # Allows for shutdown during an upgrade
-  $on_shutdown                  = false,                                         # Install only on shutdown
-  $on_error                     = false,                                         # Email only on errors, else always
-  $autoremove                   = false,                                         # Automatically remove unused dependencies
-  $auto_reboot                  = false,                                         # Automatically reboot if needed
-  $template_unattended_upgrades = 'unattended_upgrades/unattended-upgrades.erb', # Path to config template
-  $template_auto_upgrades       = 'unattended_upgrades/auto-upgrades.erb',       # Path to apt config template
-) {
+class unattended_upgrades (
+  Unattended_upgrades::Age                  $age                  = {},
+  Unattended_upgrades::Auto                 $auto                 = {},
+  Unattended_upgrades::Backup               $backup               = {},
+  Array                                     $blacklist            = [],
+  Optional[Integer[0]]                      $dl_limit             = undef,
+  Integer[0, 1]                             $enable               = 1,
+  Boolean                                   $install_on_shutdown  = false,
+  Boolean                                   $legacy_origin        = $::unattended_upgrades::params::legacy_origin,
+  Unattended_upgrades::Mail                 $mail                 = {},
+  Boolean                                   $minimal_steps        = true,
+  Array                                     $origins              = $::unattended_upgrades::params::origins,
+  String                                    $package_ensure       = installed,
+  Optional[Integer[0]]                      $random_sleep         = undef,
+  Optional[String]                          $sender               = undef,
+  Integer[0]                                $size                 = 0,
+  Integer[0]                                $update               = 1,
+  Integer[0]                                $upgrade              = 1,
+  Unattended_upgrades::Upgradeable_packages $upgradeable_packages = {},
+  Integer[0]                                $verbose              = 0,
+  Boolean                                   $notify_update        = false,
+  Unattended_upgrades::Options              $options              = {},
+  Array[String[1]]                          $days                 = [],
+) inherits ::unattended_upgrades::params {
 
-  $conf_path = '/etc/apt/apt.conf.d/50unattended-upgrades'
-  $apt_path = '/etc/apt/apt.conf.d/20auto-upgrades'
-  $package = 'unattended-upgrades'
+  # apt::conf settings require the apt class to work
+  include apt
 
-  if $::operatingsystem !~ /^(Debian|Ubuntu)$/ {
-    fail("${::operatingsystem} is not supported.")
+  $_age = merge($::unattended_upgrades::default_age, $age)
+  assert_type(Unattended_upgrades::Age, $_age)
+
+  $_auto = merge($::unattended_upgrades::default_auto, $auto)
+  assert_type(Unattended_upgrades::Auto, $_auto)
+
+  $_backup = merge($::unattended_upgrades::default_backup, $backup)
+  assert_type(Unattended_upgrades::Backup, $_backup)
+
+  $_mail = merge($::unattended_upgrades::default_mail, $mail)
+  assert_type(Unattended_upgrades::Mail, $_mail)
+
+  $_upgradeable_packages = merge($::unattended_upgrades::default_upgradeable_packages, $upgradeable_packages)
+  assert_type(Unattended_upgrades::Upgradeable_packages, $_upgradeable_packages)
+
+  $_options = merge($unattended_upgrades::default_options, $options)
+  assert_type(Unattended_upgrades::Options, $_options)
+
+  package { 'unattended-upgrades':
+    ensure => $package_ensure,
   }
 
-  package { $package:
-    ensure => latest,
+  apt::conf { 'unattended-upgrades':
+    priority      => 50,
+    content       => template("${module_name}/unattended-upgrades.erb"),
+    require       => Package['unattended-upgrades'],
+    notify_update => $notify_update,
   }
 
-  file { $conf_path:
-    ensure  => file,
-    owner   => root,
-    group   => root,
-    mode    => '0644',
-    content => template($template_unattended_upgrades),
+  apt::conf { 'periodic':
+    priority      => 10,
+    content       => template("${module_name}/periodic.erb"),
+    require       => Package['unattended-upgrades'],
+    notify_update => $notify_update,
   }
 
-  file { $apt_path:
-    ensure  => file,
-    owner   => root,
-    group   => root,
-    mode    => '0644',
-    content => template($template_auto_upgrades)
+  apt::conf { 'auto-upgrades':
+    ensure        => absent,
+    priority      => 20,
+    require       => Package['unattended-upgrades'],
+    notify_update => $notify_update,
+  }
+  apt::conf { 'options':
+    priority      => 10,
+    content       => template("${module_name}/options.erb"),
+    require       => Package['unattended-upgrades'],
+    notify_update => $notify_update,
   }
 
-  service { $package:
-    ensure    => running,
-    subscribe => [ File[$conf_path], File[$apt_path], Package[$package], ],
-  }
 }

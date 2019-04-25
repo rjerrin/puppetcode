@@ -57,7 +57,7 @@ class profile::services::ubase (
 }
 include  'profile::services::upgrade'
 include  'profile::services::time'
-include  'profile::services::pkg'
+#include  'profile::services::pkg'
 include  'profile::services::scan'
 include  'profile::services::debcron'
 
