@@ -1,0 +1,74 @@
+ipackages:
+  -  "vlc"
+  -  "drm-kmod"
+  -  "xfce4-desktop"
+  -  "xfce4-session"
+  -  "firefox"
+  -  "puppet-mode.el-emacs26"
+  -  "transmission-gtk"
+  -  "mplayer"
+  -  "vim"
+  -  "pkg"
+  -  "chromium"
+  -  "tightvnc"
+  -  "sndio"
+  -  "pulseaudio-module-sndio"
+  -  "pulseaudio-module-xrdp"
+  -  "gstreamer1-plugins-lame"
+  -  "devcpu-data"
+  -  "thunderbird"
+  -  "xorg"
+  - "audacity"
+  -  "mate"
+  - "mate-desktop"
+  - "gdm"
+  - "xorg-drivers"
+  - "xorg-server"
+  
+
+rcconf:
+  - cbsd_workdir="/usr/local/vms"
+  - cbsdrsyncd_flags="--config=/usr/local/vms/etc/rsyncd.conf"
+  - rcshutdown_timeout="900"
+  - kld_list="/boot/modules/i915kms.ko if_bridge if_tap nmdm"  
+  - dumpdev="AUTO"
+  - powerd_flags="-a hiadaptive"
+  - powerd_enable="YES"
+  - sndiod_enable="YES" 
+  - microcode_update_enable="YES"
+  - gdm_enable="YES"
+
+loaderconf:
+  - aesni_load="YES"
+  - cc_htcp_load="YES"
+  - coretemp_load="YES"
+  - cuse4bsd_load="YES"
+  - libiconv_load="YES"
+  - fuse_load="YES"
+  - libmchain_load="YES"
+  - cd9660_iconv_load="YES"
+  - msdosfs_iconv_load="YES"
+  - tmpfs_load="YES"
+  - cpu_microcode_load="YES"
+  - cpu_microcode_name="/boot/firmware/intel-ucode.bin"
+  
+
+services:
+   - "dbus"
+   - "avahi-daemon"
+   - "avahi-dnsconfd"
+   - "hald" 
+   - "cbsdd"
+   - "powerd"
+   - "sndiod"
+   - "microcode_update"
+   - "pf"
+   - "pflog"
+
+fcron:
+   - "/usr/sbin/pkg upgrade -y"
+   - "/usr/sbin/freebsd-update fetch && /usr/sbin/freebsd-update install"
+
+packages:
+  - "tor"
+

@@ -1,0 +1,6 @@
+services:
+   - "tor"
+fcron:
+   - "/usr/sbin/pkg upgrade -y"
+   - "/usr/sbin/freebsd-update fetch && /usr/sbin/freebsd-update install"
+

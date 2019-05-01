@@ -1,30 +1,27 @@
 ipackages:
-  - "emacs"
   -  "vlc"
   -  "drm-kmod"
   -  "xfce4-desktop"
   -  "xfce4-session"
   -  "firefox"
-  -  "slim"
   -  "puppet-mode.el-emacs26"
   -  "transmission-gtk"
   -  "mplayer"
   -  "vim"
   -  "tor"
   -  "pkg"
-  -  "gstreamer-plugins-lame"
-  -  "calibre"
   -  "chromium"
   -  "tightvnc"
-  -  "dnsrecon"
   -  "sndio"
-  -  "audacity"
   -  "pulseaudio-module-sndio"
   -  "pulseaudio-module-xrdp"
   -  "gstreamer1-plugins-lame"
   -  "devcpu-data"
   -  "thunderbird"
-  -  "choqok"
+  -  "xorg"
+  - "audacity"
+  -  "xorg-drivers"
+  -  "xorg-server"
   
 
 rcconf:
@@ -33,7 +30,7 @@ rcconf:
   - rcshutdown_timeout="900"
   - kld_list="/boot/modules/i915kms.ko if_bridge if_tap nmdm"  
   - dumpdev="AUTO"
-  - powerd_flags="-a minimum"
+  - powerd_flags="-a hiadaptive"
   - powerd_enable="YES"
   - sndiod_enable="YES" 
   - microcode_update_enable="YES"
@@ -52,7 +49,6 @@ loaderconf:
   - cpu_microcode_load="YES"
   - cpu_microcode_name="/boot/firmware/intel-ucode.bin"
 
-
 services:
    - "dbus"
    - "avahi-daemon"
@@ -68,3 +64,5 @@ services:
 fcron:
    - "/usr/sbin/pkg upgrade -y"
    - "/usr/sbin/freebsd-update fetch && /usr/sbin/freebsd-update install"
+
+#packages:

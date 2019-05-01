@@ -46,5 +46,11 @@ include roles::ubase
 
 }
 
+node 'puppetmaster.bsd.dev'
+{
+  include roles::fbase
+  include roles::torsvc
+}
+
 
 

@@ -2,3 +2,6 @@
 /Puppetfile.lock
 /*.lock
 /\#*
+/*.swp
+/upgrade.pp
+

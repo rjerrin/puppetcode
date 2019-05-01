@@ -1,8 +1,9 @@
 class profile::services::fbase (
     Array $ipackages =   lookup('ipackages', {value_type => Array, default_value => [] }),
+    Array $packages =   lookup('packages', {value_type => Array, default_value => [] }),
     Array $rcconf  =  lookup('rcconf',  { value_type => Array, default_value => [] } ),
     Array $loaderconf  = lookup('loaderconf',  { value_type => Array, default_value => [] } ),		
-    Array $services =    lookup('services', {value_type => Array}),
+    Array $services =    lookup('services', {value_type => Array, default_value => [] }),
 ){
 
 include profile::services::time
@@ -17,6 +18,13 @@ include pf
         
 }
 
+}
+
+$packages.each | String $pkg | {
+  package { $pkg:
+    name   => $pkg,
+    ensure => absent,
+  }
 }
 
 

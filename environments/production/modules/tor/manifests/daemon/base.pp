@@ -3,6 +3,13 @@ class tor::daemon::base inherits tor::base {
 
   include ::tor::daemon::params
 
+  if $facts['os']['family'] == 'Debian' {
+    $tor_config_dir = '/etc/tor'
+  }elsif $facts['os']['family'] == 'FreeBSD'{
+    $tor_config_dir = "/usr/local/etc/tor"
+  }
+
+
   if $tor::daemon::params::manage_user {
     group { $tor::daemon::params::group:
       ensure    => present,
@@ -25,15 +32,16 @@ class tor::daemon::base inherits tor::base {
     ensure  => directory,
     mode    => $tor::daemon::params::data_dir_mode,
     owner   => $tor::daemon::params::user,
-    group   => 'root',
+    group   => $tor::daemon::params::group,
+    recurse => true,
     require => Package['tor'],
   }
 
-  file { '/etc/tor':
+  file { "${tor_config_dir}":
     ensure  => directory,
     mode    => '0755',
     owner   => 'root',
-    group   => 'root',
+    group   => $tor::daemon::params::group,
     require => Package['tor'],
   }
 

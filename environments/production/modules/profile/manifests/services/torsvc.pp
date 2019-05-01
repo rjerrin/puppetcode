@@ -1,6 +1,4 @@
 class profile::services::torsvc {
-include tor::polipo
 
-
-
+  class { 'tor::torsocks': }
 }
