@@ -9,6 +9,7 @@ class profile::services::fbase (
 include profile::services::time
 include profile::services::fcron
 include profile::services::ns
+include profile::services::scan
 include pf
 
     $ipackages.each | String $pkg | {

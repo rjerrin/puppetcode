@@ -28,6 +28,7 @@ node 'fbsd'
 {
 
 include roles::fbase
+include roles::torsvc
 
 }
 

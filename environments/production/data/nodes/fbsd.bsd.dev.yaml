@@ -1,29 +1,33 @@
 ipackages:
-  -  "vlc"
-  -  "drm-kmod"
-  -  "xfce4-desktop"
-  -  "xfce4-session"
-  -  "firefox"
-  -  "puppet-mode.el-emacs26"
-  -  "transmission-gtk"
-  -  "mplayer"
-  -  "vim"
-  -  "pkg"
-  -  "chromium"
-  -  "tightvnc"
-  -  "sndio"
-  -  "pulseaudio-module-sndio"
-  -  "pulseaudio-module-xrdp"
-  -  "gstreamer1-plugins-lame"
-  -  "devcpu-data"
-  -  "thunderbird"
-  -  "xorg"
+  - "vlc"
+  - "drm-kmod"
+  - "xfce4-desktop"
+  - "xfce4-session"
+  - "firefox"
+  - "puppet-mode.el-emacs26"
+  - "transmission-gtk"
+  - "mplayer"
+  - "vim"
+  - "pkg"
+  - "chromium"
+  - "tightvnc"
+  - "sndio"
+  - "pulseaudio-module-sndio"
+  - "pulseaudio-module-xrdp"
+  - "gstreamer1-plugins-lame"
+  - "devcpu-data"
+  - "thunderbird"
+  - "xorg"
   - "audacity"
   -  "mate"
   - "mate-desktop"
   - "gdm"
   - "xorg-drivers"
   - "xorg-server"
+  - "wireshark"
+  - "fuse"
+  - "fusefs-ext4fuse"
+
   
 
 rcconf:
@@ -51,6 +55,7 @@ loaderconf:
   - tmpfs_load="YES"
   - cpu_microcode_load="YES"
   - cpu_microcode_name="/boot/firmware/intel-ucode.bin"
+  - pf_rules="/etc/pf.conf
   
 
 services:
@@ -69,6 +74,5 @@ fcron:
    - "/usr/sbin/pkg upgrade -y"
    - "/usr/sbin/freebsd-update fetch && /usr/sbin/freebsd-update install"
 
-packages:
-  - "tor"
+#packages:
 

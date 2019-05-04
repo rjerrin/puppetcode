@@ -50,6 +50,7 @@ loaderconf:
   - tmpfs_load="YES"
   - cpu_microcode_load="YES"
   - cpu_microcode_name="/boot/firmware/intel-ucode.bin"
+  - pf_rules="/etc/pf.conf"
 
 services:
    - "dbus"
