@@ -1,3 +1,5 @@
+
+
 ipackages:
   - "vlc"
   - "drm-kmod"
@@ -27,6 +29,7 @@ ipackages:
   - "wireshark"
   - "fuse"
   - "fusefs-ext4fuse"
+  - "vm-bhyve"
 
   
 
@@ -36,11 +39,13 @@ rcconf:
   - rcshutdown_timeout="900"
   - kld_list="/boot/modules/i915kms.ko if_bridge if_tap nmdm"  
   - dumpdev="AUTO"
-  - powerd_flags="-a hiadaptive"
+  - powerd_flags="-a minimum"
   - powerd_enable="YES"
   - sndiod_enable="YES" 
   - microcode_update_enable="YES"
   - gdm_enable="YES"
+  - sshd_enable="NO"
+  - vm_dir="/usr/local/vms"
 
 loaderconf:
   - aesni_load="YES"
@@ -69,6 +74,7 @@ services:
    - "microcode_update"
    - "pf"
    - "pflog"
+   - "vm"
 
 fcron:
    - "/usr/sbin/pkg upgrade -y"

@@ -90,7 +90,7 @@ class rkhunter  (
 
   file { '/etc/rkhunter.conf':
     owner   => 'root',
-    group   => 'root',
+    group   => 'wheel',
     mode    => '0644',
     content => template('rkhunter/etc/rkhunter.conf.erb');
   }

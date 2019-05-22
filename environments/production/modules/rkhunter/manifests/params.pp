@@ -50,7 +50,7 @@ class rkhunter::params {
     'RedHat' => '0',
     default  => '1',
   }
-  $installdir          = '/usr'
+  $installdir          = '/usr/local'
   $ssh_config_dir      = undef  #"/etc/ssh"
   $hash_cmd            = undef  #"sha1sum"
   $hash_fld_idx        = undef  #"4"

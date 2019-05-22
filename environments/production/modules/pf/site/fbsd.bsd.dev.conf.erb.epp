@@ -1,0 +1,26 @@
+if = "em0"
+scrub in all
+
+block in log  all
+block out log all
+
+antispoof log  quick  for $if
+
+
+pass out log on $if proto icmp from any to any keep state
+
+pass out log on $if proto udp from any to any port 53 keep state
+pass out log on bridge1 proto udp from any to any port 53 keep state
+pass out log on tap0 proto udp from any to any port 53 keep state
+pass out log on tap1 proto udp from any to any port 53 keep state
+pass out log on tap2 proto udp from any to any port 53 keep state
+
+pass out log on $if proto tcp from $if to 192.168.100.35  port 8140 flags S/SA keep state
+pass out log on $if proto tcp from $if to 192.168.100.35  port 22 flags S/SA keep state
+#pass out log on $if proto tcp from $if to smtp.gmail.com  port 465 flags S/SA keep state
+#pass out log on $if proto tcp from $if to imap.gmail.com  port 993 flags S/SA keep state
+
+pass out log on $if proto tcp from $if to any port 80 flags S/SA keep state
+pass out log on $if proto tcp from $if to any port 443 flags S/SA keep state
+pass out log on $if proto tcp from $if to any port 123 flags S/SA keep state
+pass log on lo0 all
