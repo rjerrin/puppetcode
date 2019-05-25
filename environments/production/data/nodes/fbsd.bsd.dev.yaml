@@ -1,5 +1,3 @@
-
-
 ipackages:
   - "vlc"
   - "drm-kmod"
@@ -30,8 +28,12 @@ ipackages:
   - "fuse"
   - "fusefs-ext4fuse"
   - "vm-bhyve"
-
+  - "corebird"  
+  - "virtualbox-ose"
+  - "virtualbox-ose-additions"
+  - "virtualbox-ose-kmod"
   
+
 
 rcconf:
   - cbsd_workdir="/usr/local/vms"
